@@ -1,3 +1,13 @@
 @use "./base.scss";
 
 // put your custom CSS here!
+
+ul.overflow:after, ol.overflow:after {
+  background: unset;
+}
+
+:root[saved-theme=light] body {
+  // 网格背景
+  background: linear-gradient(to top, transparent 24px, #e5e5e5 0), linear-gradient(to left, var(--light) 24px, #e5e5e5 0);
+  background-size: 25px 25px;
+}
