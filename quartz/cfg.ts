@@ -73,14 +73,14 @@ export interface QuartzConfig {
 }
 
 export interface FullPageLayout {
-  head: QuartzComponent
-  header: QuartzComponent[]
-  beforeBody: QuartzComponent[]
-  pageBody: QuartzComponent
-  afterBody: QuartzComponent[]
-  left: QuartzComponent[]
-  right: QuartzComponent[]
-  footer: QuartzComponent
+  head: QuartzComponent         // single component
+  header: QuartzComponent[]     // laid out horizontally
+  beforeBody: QuartzComponent[] // laid out vertically
+  pageBody: QuartzComponent     // single component
+  afterBody: QuartzComponent[]  // laid out vertically
+  left: QuartzComponent[]       // vertical on desktop, horizontal on mobile
+  right: QuartzComponent[]      // vertical on desktop, horizontal on mobile
+  footer: QuartzComponent       // single component
 }
 
 export type PageLayout = Pick<FullPageLayout, "beforeBody" | "left" | "right">

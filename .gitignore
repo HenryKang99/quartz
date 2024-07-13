@@ -9,3 +9,7 @@ tsconfig.tsbuildinfo
 private/
 .replit
 replit.nix
+
+/content/todo.md
+/content/_resources/*
+!/content/_resources/attachment

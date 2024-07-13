@@ -8,35 +8,36 @@ import * as Plugin from "./quartz/plugins"
  */
 const config: QuartzConfig = {
   configuration: {
-    pageTitle: "🪴 Quartz 4.0",
+    pageTitle: "HenryKang's Docs",
     enableSPA: true,
     enablePopovers: true,
     analytics: {
-      provider: "plausible",
+      provider: "google",
+      tagId: "G-509PDX0K4Y",
     },
-    locale: "en-US",
-    baseUrl: "quartz.jzhao.xyz",
-    ignorePatterns: ["private", "templates", ".obsidian"],
+    locale: "zh-CN",
+    baseUrl: "docs.henrykang.site",
+    ignorePatterns: ["private", "_Private", ".obsidian", "templates", "_resources/excalidraw", "_resources/script", "_resources/templates"],
     defaultDateType: "created",
     theme: {
       fontOrigin: "googleFonts",
       cdnCaching: true,
       typography: {
-        header: "Schibsted Grotesk",
-        body: "Source Sans Pro",
-        code: "IBM Plex Mono",
+        header: "LXGW WenKai Screen", // Font to use for headers
+        body: "LXGW WenKai Screen", // Font for everything
+        code: "JetBrains Mono", // Font for inline and block quotes.
       },
       colors: {
         lightMode: {
-          light: "#faf8f8",
-          lightgray: "#e5e5e5",
-          gray: "#b8b8b8",
-          darkgray: "#4e4e4e",
-          dark: "#2b2b2b",
-          secondary: "#284b63",
-          tertiary: "#84a59d",
-          highlight: "rgba(143, 159, 169, 0.15)",
-          textHighlight: "#fff23688",
+          light: "#FAF9DE", // page background
+          lightgray: "#e5e5e5", // borders
+          gray: "#b8b8b8", // graph links, heavier borders
+          darkgray: "#000000FF", // body text
+          dark: "#2b2b2b", // header text and icons
+          secondary: "#284b63", // link colour, current graph node
+          tertiary: "#84a59d", // hover states and visited nodes
+          highlight: "rgba(143, 159, 169, 0.15)", // internal link background, highlighted text, highlighted lines of code
+          textHighlight: "#fff23688", // markdown highlighted text background
         },
         darkMode: {
           light: "#161618",
@@ -60,15 +61,17 @@ const config: QuartzConfig = {
       }),
       Plugin.SyntaxHighlighting({
         theme: {
-          light: "github-light",
-          dark: "github-dark",
+          light: "nord",
+          dark: "one-dark-pro",
         },
-        keepBackground: false,
+        keepBackground: true,
       }),
       Plugin.ObsidianFlavoredMarkdown({ enableInHtmlEmbed: false }),
       Plugin.GitHubFlavoredMarkdown(),
-      Plugin.TableOfContents(),
-      Plugin.CrawlLinks({ markdownLinkResolution: "shortest" }),
+      Plugin.TableOfContents({
+        maxDepth: 4,
+      }),
+      Plugin.CrawlLinks({ markdownLinkResolution: "absolute" }),
       Plugin.Description(),
       Plugin.Latex({ renderEngine: "katex" }),
     ],
@@ -86,6 +89,7 @@ const config: QuartzConfig = {
       Plugin.Assets(),
       Plugin.Static(),
       Plugin.NotFoundPage(),
+      Plugin.CNAME(),
     ],
   },
 }
