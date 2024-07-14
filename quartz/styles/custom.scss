@@ -8,6 +8,6 @@ ul.overflow:after, ol.overflow:after {
 
 :root[saved-theme=light] body {
   // 网格背景
-  background: -webkit-linear-gradient(top, transparent 23px, #e5e5e5 0), -webkit-linear-gradient(left, var(--light) 23px, #e5e5e5 0);
-  background-size: 24px 24px;
+  background: linear-gradient(to top, transparent 24px, #e5e5e5 0), linear-gradient(to left, var(--light) 24px, #e5e5e5 0);
+  background-size: 25px 25px;
 }
