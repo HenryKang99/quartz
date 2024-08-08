@@ -30,6 +30,12 @@ OS name: "windows 10", version: "10.0", arch: "amd64", family: "windows"
 
 核心配置文件位于 `${MAVEN_HOME}/conf/settings.xml`，更多参考：[Maven Settings – Settings (apache.org)](https://maven.apache.org/ref/3.8.6/maven-settings/settings.html)
 
+注意：
+
+- 三个仓库按优先级从高到低：1.本地仓库，2.repository 里配的，3.默认的 central 仓库；
+- mirror 的目的是把 repository 替换了，如果 mirror.mirrorOf == repository.id，那么就不走 repository 而走 mirror；
+- mirror.mirrorOf 配置成 \*，就是所有都走 mirror；配置成 central，就是把内置的 maven 远程仓库替换为配置的 mirror。
+
 ```xml
 <!-- 配置本地仓库 -->
 <localRepository>D:\DevKit\.m2\repository</localRepository>

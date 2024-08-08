@@ -12,7 +12,7 @@ order: 10
 - [[/Java/注解与反射|注解与反射]]
 - [[/Java/JavaIO流|JavaIO流]]
 - [[/Java/JavaNIO|JavaNIO]]
-- [[/Java/Java多线程-基础|Java多线程-基础]]
+- [[Java/Java多线程-基础|Java多线程-基础]]
 - [[/Java/Java多线程-JUC|Java多线程-JUC]]
 
 ---

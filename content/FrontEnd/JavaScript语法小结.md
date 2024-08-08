@@ -16,7 +16,7 @@ JavaScript 在 1995 年由 Netscape 公司的 Brendan Eich 开发，最初名叫
 
 ## script 标签
 
-\<scrit> 标签用于在 HTML 中引入 JavaScript，按照引用方式，有 **行内脚本** 和 **外部脚本** 之分。如果两者混用，浏览器会忽视行内脚本，只加载并执行外部脚本。使用外部脚本易于维护，并且可以使用到浏览器的缓存。
+\<scrit> 标签用于在 HTML 中引入 JavaScript，按照引用方式，有**行内脚本**和**外部脚本**之分。如果两者混用，浏览器会忽视行内脚本，只加载并执行外部脚本。使用外部脚本易于维护，并且可以使用到浏览器的缓存。
 
 ### 8 个属性
 
@@ -282,7 +282,7 @@ new Date()
 // 指定从 1970 年 1 月 1 日至今的毫秒数
 new Date(milliseconds)  
 
-/* ES5 规定的应该支持的格式
+/*ES5 规定的应该支持的格式
 1. 5/23/2019
 2. May 23, 2019
 3. Tue May 23 2019 00:00:00 GMT-0700
@@ -299,10 +299,10 @@ new Date(Date.UTC(year, month, ...))
 
 ***常用方法***
 
-- Date. parse() 将字符串转换为毫秒数，失败返回 NaN。
-- Date. UTC() 将字符串转换为毫秒数，接收年月日时分秒毫秒作为参数，年月必须传递。
+- Date.parse() 将字符串转换为毫秒数，失败返回 NaN。
+- Date.UTC() 将字符串转换为毫秒数，接收年月日时分秒毫秒作为参数，年月必须传递。
 	- 注意：月份从 0 开始。
-- Date. now() 返回当前的毫秒数。
+- Date.now() 返回当前的毫秒数。
 - getFullYear() 获取年份。
 - getMonth() 获取月份 0-11。
 - getDate() 获取日期 1-31。
@@ -532,9 +532,9 @@ let 函数名 = function(var1,var2...){
 ```
 
 - 注意：
-  - 函数实际是一个 **Function** 对象，重名方法会被覆盖重写，**没有重载** 一说。
+  - 函数实际是一个**Function**对象，重名方法会被覆盖重写，**没有重载**一说。
   - 方法的定义不用写参数类型也不用写返回类型。
-  - 每个函数内都内置了一个 *类数组* 对象 **arguments**，封装了传进来的参数。
+  - 每个函数内都内置了一个*类数组*对象**arguments**，封装了传进来的参数。
 - 函数 VS 方法：方法特指我们自己创建的对象中的函数，通过 `对象.方法名` 调用 （ 函数其实也是 window 对象的方法。
 
 ***参数问题***
@@ -565,19 +565,19 @@ foo(5);
 
 ### 闭包
 
-**闭包** 指的是 **引用了另一个函数作用域中变量的函数**，通常是在嵌套函数中实现的。
+**闭包**指的是**引用了另一个函数作用域中变量的函数**，通常是在嵌套函数中实现的。
 
-使用闭包的 **目的** 是：在不使用全局变量的条件下，让某些局部变量的值驻留到内存中，并且可以被访问的到。
+使用闭包的**目的**是：在不使用全局变量的条件下，让某些局部变量的值驻留到内存中，并且可以被访问的到。
 
-闭包的 **本质** 是链接内层函数和外层函数的桥梁。
+闭包的**本质**是链接内层函数和外层函数的桥梁。
 
 要理解闭包首先要理解作用域链。
 
 ***作用域链***
 
-JS 中每个上下文都关联了一个对象，称为 *变量对象*，该上下文所定义的所有变量和函数都存在于这个变量对象上。*全局上下文* 的变量对象就是 Global，在浏览器中就是 window 对象。每个函数调用都有各自的上下文，当进入某个函数时，其上下文被推到一个 *上下文栈* 中，当函数执行完毕后，上下文栈弹出该上下文，将控制权返还给之前的执行上下文。
+JS 中每个上下文都关联了一个对象，称为*变量对象*，该上下文所定义的所有变量和函数都存在于这个变量对象上。*全局上下文*的变量对象就是 Global，在浏览器中就是 window 对象。每个函数调用都有各自的上下文，当进入某个函数时，其上下文被推到一个*上下文栈*中，当函数执行完毕后，上下文栈弹出该上下文，将控制权返还给之前的执行上下文。
 
-代码执行过程中，会创建变量对象的一个 *作用域链*，位于 **作用域链顶端** 的是当前正在执行的上下文对应的变量对象，如果正在执行某函数，则其 *活动对象* 就是变量对象，即就是 arguments。和上下文栈的出栈顺序对应，作用域链的下一节点是上一层上下文对应的变量对象，以此类推直到全局上下文对应的变量对象。
+代码执行过程中，会创建变量对象的一个*作用域链*，位于**作用域链顶端**的是当前正在执行的上下文对应的变量对象，如果正在执行某函数，则其*活动对象*就是变量对象，即就是 arguments。和上下文栈的出栈顺序对应，作用域链的下一节点是上一层上下文对应的变量对象，以此类推直到全局上下文对应的变量对象。
 
 代码执行时标识符解析就是沿着作用域链逐层搜索，若没有找到，则报错。大白话就是子对象可以访问到父对象中的变量和函数。
 
@@ -623,185 +623,7 @@ console.log(i); // 访问不到
 
 ## 期约 Promise
 
-[通俗易懂的 Promise 知识点总结，检验一下你是否真的完全掌握了 Promise？ - 掘金 (juejin.cn)](https://juejin.cn/post/7020335414980378655)
-
-Promise 是 ES6 的新特性，提供了一种更加优雅的 **异步编程** 方式，避免了 *回调地狱*。配合 async/await 可以写出更加容易理解和调试的代码。
-
-***期约的三种状态***
-
-期约有三种状态：*待定*(pending)、*解决*(resolved)、*拒绝*(rejected)。待定状态可以转化为解决和拒绝状态，并且 **不可逆**，对于三种状态，都应该为其定义恰当的行为。
-
-期约的状态是私有的，这是为了防止在外部同步操作中获取并修改期约的状态。期约为解决和拒绝状态维护了两个内部值，分别是 *解决值*(value) 和 *拒绝理由*(reson)，调用 `resolve()` 和 `reject()` 可以将期约的状态由待定转化为解决和拒绝，并且不可逆，**重复调用会静默失败**。
-
-***使用***
-
-创建期约时需要传入一个执行器，如果不提供则会抛出 SyntaxError。注意执行器函数是同步执行的。为了避免期约始终处于待定状态，一般会在执行器函数中使用 `setTimeout()` 来设置一个期望的时间。
-
-```js
-let p1 = new Promise((resolve, reject) => {
-	setTimeout(reject, 10000); // 10 秒后调用 reject()
-	resolve();
-	reject(); // 静默失败
-});
-setTimeout(console.log, 0, p1); // Promise <resolved>
-
-// ---
-
-let p2 = new Promise((resolve, reject) => {
-	setTimeout(reject, 10000); // 10 秒后调用 reject()
-	// ...
-});
-setTimeout(console.log, 0, p); // Promise <pending>
-setTimeout(console.log, 11000, p); // 11 秒后再检查状态
-```
-
-`reject()` 会抛出一个错误，并且这个错误不能被 `try/catch` 捕获到，只能由拒绝处理程序捕获。这是因为错误信息没有被抛出到正在执行同步代码的线程里，而是通过浏览器的异步消息队列来处理的。
-
-```js
-try {
-	throw new Error('foo');
-} catch(e) {
-	console.log(e); // Error: foo
-}
-
-// ---
-
-try {
-	Promise.reject(new Error('bar'));
-} catch(e) {
-	console.log(e);	// 无法捕获
-}
-// Uncaught (in promise) Error: bar
-```
-
-我们可以通过下面这几个 *期约的实例方法* 来访问异步操作返回的数据。
-
- ***then() 方法***
-
- then() 方法接受两个可选的参数，分别是 resolve 和 reject 后对应的处理程序，会在 Promise 转化为对应状态后执行。
-
- ```js
-function onResolved(id) {
-	setTimeout(console.log, 0, id, 'resolved');
-}
-
-function onRejected(id) {
-	setTimeout(console.log, 0, id, 'rejected');
-}
-
-let p1 = new Promise((resolve, reject) => setTimeout(resolve, 3000));
-let p2 = new Promise((resolve, reject) => setTimeout(reject, 3000));
-
-p1.then(() => onResolved('p1'), () => onRejected('p1'));
-p2.then(() => onResolved('p2'), () => onRejected('p2'));
-
-//（3 秒后）
-// p1 resolved
-// p2 rejected
- ```
-
-then() 方法会返回一个新的 Promise 实例，这个实例基于 resolve 处理程序的返回值进行构建，即就是会通过 Promise.resolve() 包装来生成新期约。如果没有提供这个 resolve 处理程序，则 Promise.resolve() 就会包装上一个期约 resolve 之后的值。如果没有显式的返回语句，则 Promise.resolve() 会包装默认的返回值 undefined。
-
-关于 **执行顺序**：在一个解决期约上调用 then() 会把 resolve 处理程序推进消息队列。但这个处理程序在当前线程上的同步代码执行完成之前不会被执行。
-
- ***catch() 方法***
-
- catch() 方法用于为 Promise 添加 reject 处理程序，是一个语法糖，相当于调用 then(null, onRejected)。
-
- ***finally() 方法***
-
- 为 Promise 添加 onFinally 处理程序，无论 Promise 转换为 resolved 还是 rejected，都会执行，但在其中无法知道 Promise 的状态是 resolved 还是 rejected，主要用于添加清理代码。
-
-无论是 then()、catch() 还是 finally()，如果添加多个处理程序，当 Promise 状态发生改变是，会按照添加的顺序依次执行。
-
-```js
-let p1 = Promise.resolve();
-p1.then(() => setTimeout(console.log, 0, 1));
-p1.then(() => setTimeout(console.log, 0, 2));
-// 1
-// 2
-```
-
-***解决值、拒绝理由***
-
-Promise 维护了两个内部变量，即 *解决值*(value) 和 *拒绝理由*(reson)，可以提供给对应的处理程序。
-
-```js
-let p1 = new Promise((resolve, reject) => resolve('foo'));
-p1.then((value) => console.log(value)); // foo
-
-let p2 = new Promise((resolve, reject) => reject('bar'));
-p2.catch((reason) => console.log(reason)); // bar
-```
-
-***期约连锁***
-
-目的：**串行化异步方法**，解决了回调地狱的问题。
-
-```js
-let p1 = new Promise((resolve, reject) => {
-	console.log('p1 executor');
-	setTimeout(resolve, 1000);
-});
-
-p1.then(() => new Promise((resolve, reject) => {
-	console.log('p2 executor');
-	setTimeout(resolve, 1000);
-}))
-.then(() => new Promise((resolve, reject) => {
-	console.log('p3 executor');
-	setTimeout(resolve, 1000);
-}))
-.then(() => new Promise((resolve, reject) => {
-	console.log('p4 executor');
-	setTimeout(resolve, 1000);
-}));
-// p1 executor（1 秒后）
-// p2 executor（2 秒后）
-// p3 executor（3 秒后）
-// p4 executor（4 秒后）
-```
-
-***期约合成***
-
-`Promise.all()` 静态方法创建的期约会在一组期约全部 resolve 后再转到相应处理程序，该方法接收一个可迭代的对象。
-
-```js
-let p = Promise.all([
-	Promise.resolve(), 
-	new Pro	mise((resolve, reject) => setTimeout(resolve, 1000))
-]);
-setTimeout(console.log, 0, p); // Promise <pending>
-p.then(() => setTimeout(console.log, 0, 'all() resolved!'));
-// all() resolved!（大约 1 秒后）
-```
-
-如果包含一个待定的期约，则合成的期约也处于待定状态；如果包含一个拒绝的期约，则合成的期约也会转换为拒绝状态；如果所有期约都成功解决，则合成期约的解决值就是所有包含期约解决值的数组。
-
-```js
-let p = Promise.all([
-	Promise.resolve(3),
-	Promise.resolve(),
-	Promise.resolve(4)
-]);
-p.then((values) => setTimeout(console.log, 0, values)); 
-// [3, undefined, 4]
-```
-
-如果有期约拒绝，则第一个拒绝的期约会将自己的理由作为合成期约的拒绝理由。之后再拒绝的期约不会影响最终期约的拒绝理由。不过，这并不影响所有包含期约正常的拒绝操作。合成的期约会静默处理所有包含期约的拒绝操作。
-
-`Promise.race()` 静态方法返回一个包装期约，是一组集合中最先解决或拒绝的期约的镜像。这个方法接收一个可迭代对象，返回一个新期约。
-
-```js
-// 解决先发生，超时后的拒绝被忽略
-let p1 = Promise.race([
-	Promise.resolve(3),
-	new Promise((resolve, reject) => setTimeout(reject, 1000))
-]);
-setTimeout(console.log, 0, p1); // Promise <resolved>: 3
-```
-
-如果有一个期约拒绝，只要它是第一个落定的，就会成为拒绝合成期约的理由。之后再拒绝的期约不会影响最终期约的拒绝理由。不过，这并不影响所有包含期约正常的拒绝操作。与 Promise.all() 类似，合成的期约会静默处理所有包含期约的拒绝操作。
+前往：[[FrontEnd/Promise|Promise]]
 
 ## 面向对象
 
@@ -830,7 +652,7 @@ let person = {
 }; 
 ```
 
-对象的属性分为两种：*数据属性* 和 *访问器属性*。数据属性就是普通的变量，访问器属性就是 get、set 方法。他们分别有着不同的 **内部特性** 来描述他们的行为，这些特性一般不能直接访问，打印对象时，通常可以看到双中括号，如 \[\[Enumerable\]\]，这就是描述属性行为的特性。
+对象的属性分为两种：*数据属性*和*访问器属性*。数据属性就是普通的变量，访问器属性就是 get、set 方法。他们分别有着不同的**内部特性**来描述他们的行为，这些特性一般不能直接访问，打印对象时，通常可以看到双中括号，如 \[\[Enumerable\]\]，这就是描述属性行为的特性。
 
 ***数据属性***
 
@@ -1011,7 +833,7 @@ Object.defineProperty(Person.prototype, "constructor", {
 
 ### 继承
 
-JS 中的继承就使用到了原型，称为 *原型链*。本质是让子类的原型指向父类的实例，即子类对象原型的原型就指向了父类原型，这就是原型链。
+JS 中的继承就使用到了原型，称为*原型链*。本质是让子类的原型指向父类的实例，即子类对象原型的原型就指向了父类原型，这就是原型链。
 
 代码实现如下。
 
@@ -1049,7 +871,7 @@ console.log(instance.getSuperValue()); // true
 
 ### 事件流
 
-由于 HTML 是嵌套的，故当点击了页面上的某个按钮后，同时还点击了它的父容器，乃至于整个页面。这就有了 *事件流* 的概念。
+由于 HTML 是嵌套的，故当点击了页面上的某个按钮后，同时还点击了它的父容器，乃至于整个页面。这就有了*事件流*的概念。
 
 ```js
 <!DOCTYPE html>
@@ -1063,11 +885,11 @@ console.log(instance.getSuperValue()); // true
 </html>
 ```
 
-在点击页面中的\<div>元素后，click 事件会以如下顺序发生，称为 *事件冒泡*。现代浏览器中的事件会一直冒泡到 window 对象。
+在点击页面中的\<div>元素后，click 事件会以如下顺序发生，称为*事件冒泡*。现代浏览器中的事件会一直冒泡到 window 对象。
 
 ![[_resources/attachment/ba666ee8-4ff8-4f1c-adea-d73a18600c9f.png]]
 
-除此之外，还有 *事件捕获* 的概念，指在事件到达最终目标前拦截事件，点击页面中的\<div>元素后，click 事件会以如下顺序发生。
+除此之外，还有*事件捕获*的概念，指在事件到达最终目标前拦截事件，点击页面中的\<div>元素后，click 事件会以如下顺序发生。
 
 ![[_resources/attachment/bbe79df8-05d1-49d8-837b-5be741c1c883.png]]
 
@@ -1098,7 +920,7 @@ function showMessage() {
 <input type="button" value="Click Me" onclick="try{showMessage();}catch(ex) {}">
 ```
 
-这样添加的事件处理程序，可以接收一个内部维护的特殊局部变量 `event`，即 *事件对象*。特别的，事件处理程序中的 `this` 指代的是事件源，即发出事件的 DOM 对象。
+这样添加的事件处理程序，可以接收一个内部维护的特殊局部变量 `event`，即*事件对象*。特别的，事件处理程序中的 `this` 指代的是事件源，即发出事件的 DOM 对象。
 
 ***DOM0 添加事件处理程序***
 
@@ -1187,35 +1009,6 @@ btn.removeEventListener("click", function() {
 
 [微任务、宏任务与Event-Loop - 掘金 (juejin.cn)](https://juejin.cn/post/6844903657264136200#heading-3)
 
-## 跨域问题
-
-浏览器发送 HTTP 请求，协议、域名、端口号有一个不一样，即不满足 *同源策略*，就会存在跨域问题。解决跨域的常用手段有 JSONP，代理方式，CORS……
-
-同源策略是为了防止恶意服务器读取本地 cookie、storage 等信息，\<img>、\<script>、表单提交操作不受同源策略影响。
-
-***代理方式***
-
-代理方式不是最终手段，只适用于开发阶段或前端资源和代理服务器同源的情况。浏览器请求同源的代理服务器，代理服务器不受同源策略影响，可以正常与后端服务器通信。
-
-***CORS***
-
-跨源资源共享（CORS，Cross-Origin Resource Sharing），是解决跨域的最根本手段。
-
-浏览器将发送的请求分为两类，即 *简单请求* 和 *非简单请求*，，类似表单提交的请求就是简单请求，具体详细规则不再记录了。下面是两种请求的不同处理方法：
-
-对于简单请求，且是跨域请求，则自动在请求头添加一个 `Origin` 字段，来说明本次请求来自的源，服务器根据这个字段与事先的规则配置来判断是否允许这个源。如果允许，则会在响应头上设置 `Access-Control-Allow-Origin` 等字段，浏览器拿到响应信息后根据这些字段判断根据同源策略是否要滤掉该响应信息。如果服务端不认可这个源，它也会返回正常的响应，只不过没有额外的响应头，浏览器判断后会过滤掉这个响应。
-
-即就是，跨域请求可以被服务器接收并响应，只不过被浏览器过滤了，只有后端配置了 CORS，设置了响应头，浏览器拿到响应进行判断后，予以放行。
-
-对于非简单请求，再第一次跨域请求之前，浏览器会发送一个 *预检请求*（Option 类型），包含了上面提到的 Origin 还有请求方式等信息，作用就是和服务器沟通是否认可这个源，如果服务器认可，则做出响应，浏览器会缓存这个响应的信息，在有效期内，以后发送跨域请求时都不会再额外发送预检请求。
-
-下面是响应头的一些字段说明：
-
-- Access-Control-Allow-Origin：必须，认可的源，要么等于请求头的 Origin，要么等于 \*，表示通通认可。
-- Access-Control-Request-Method：必须，认可的请求方法。
-- Access-Control-Allow-Credentials：可选，表示服务器端是否想要接收 Cookie，需要注意的是，即便设置为 true，浏览器也不一定发送 Cookie，还必须要满足域名匹配，并且再前端发送请求时配置 withCredentials 属性，并且 Access-Control-Allow-Origin 不能配置为 \*。
-- Access-Control-Max-Age：可选，指定本次预检请求的缓存有效期。
-
 ## 模块化
 
 ES6 之前，常用的有 AMD 和 CommonJS 模块化规范，但需要额外进行打包处理，才能被浏览器所支持。ES6 之后，支持 ES6 的浏览器可以原生的支持 JS 模块加载。下面只记录 ES6 模块化相关的概念和语法。
@@ -1234,11 +1027,11 @@ ES6 模块的特点：模块是单例的只加载一次；模块代码只在加�
 <script type="module" src="path/to/myModule.js"></script> 
 ```
 
-使用 `type="module"` 相当于给 `\<script\>` 标签添加了 `defer` 属性，所有的文件将立即异步加载，但会在文档解析完成后执行，多个模块的执行顺序按照书写顺序。若与此同时声明了 `async` 属性，则模块会立即异步加载，但不会等到文档解析完成后才执行， 并且多个模块间的执行顺序与书写顺序不一定相同。
+使用 `type="module"` 相当于给 `<script>` 标签添加了 `defer` 属性，所有的文件将立即异步加载，但会在文档解析完成后执行，多个模块的执行顺序按照书写顺序。若与此同时声明了 `async` 属性，则模块会立即异步加载，但不会等到文档解析完成后才执行，并且多个模块间的执行顺序与书写顺序不一定相同。
 
 ### 模块的导出
 
-可以使用 `export` 控制模块的哪些部分对外部可见，支持 *命名导出* 和 *默认导出*，分别对应着不同的导入方式。
+可以使用 `export` 控制模块的哪些部分对外部可见，支持*命名导出*和*默认导出*，分别对应着不同的导入方式。
 
 注意：
 
@@ -1293,8 +1086,8 @@ const foo = 'foo', bar = 'bar', baz = 'baz';
 export {foo, bar, baz} 
 export default foo
 
-// 对于命名导出，可以使用 * 来批量导入
-import * as Foo from './foo.js';
+// 对于命名导出，可以使用*来批量导入
+import*as Foo from './foo.js';
 console.log(Foo.foo); // foo 
 console.log(Foo.bar); // bar 
 console.log(Foo.baz); // baz
@@ -1312,23 +1105,5 @@ import foo from './foo.js';
 // 混合使用
 import foo, { bar, baz } from './foo.js';
 import { default as foo, bar, baz } from './foo.js';
-import foo, * as Foo from './foo.js';
-```
-
-## 其他
-
-### 导出对象到文件
-
-```js
-let writeJsonToFile = (data) => {
-  const jsonData = JSON.stringify(data);
-  const blob = new Blob([jsonData], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'data.json';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
+import foo,*as Foo from './foo.js';
 ```

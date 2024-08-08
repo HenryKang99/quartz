@@ -262,7 +262,7 @@ public class TestCRUD {
 #### 1.4 主配置文件中的几个标签
 
 1. `<properties>`
-   - 直接在\<properties>标签下配置子标签<property name = ? , value = ? >;
+  - 直接在\<properties>标签下配置子标签 `<property name = ? , value = ? >`;
    - 有两个属性可以指定外部配置文件;
      - `<resource = ?>` 只能指定存在于类路径下的文件;
      - `<url = ?>` 可以指定任意位置的文件;
@@ -577,4 +577,15 @@ Card findCardByStuId(@Param("stu_id") int stuId);
 // 响应接口上
 @CacheNamespace(blocking=true)
 public interface IStudnetDao {...}
+```
+
+## 其他
+
+### 流式查询
+
+```java
+// mapper.java
+void listDataByStream(@Param("param") String param, ResultHandler<Map<String, Object>> resultHandler);
+// xml
+<select id="listDataByStream" resultSetType="FORWARD_ONLY" fetchSize="10000" resultType="java.util.Map">
 ```

@@ -8,13 +8,13 @@ date: 2023-05
 
 ## Overview
 
+正向代理（如 VPN）隐藏了真正的客户端，而反向代理隐藏了真正的服务端。
+
 Nginx 是一个高性能的 HTTP 和反向代理服务器。
 
-正向代理（如 VPN）隐藏了客户端，反向代理隐藏了服务端。
-
-反向代理分为隧道模式代理与 DR 模式代理。
-
-四层负载均衡本质是转发，七层负载均衡本质是内容交换，Nginx 属于七层负载均衡。[四层、七层负载均衡的区别](https://cloud.tencent.com/developer/article/1082047)
+反向代理除了隐藏服务端增强安全性，还起到负载均衡的作用，最常见的是四层与七层负载均衡。  
+四层 (传输层 TCP/UDP) 负载均衡本质是转发，接收到数据包后通过改写数据包的地址信息 (IP+ 端口) 将流量转发到对应的服务器，常见的应用于四层的负载均衡器是 LVS，参考 [Linux Virtual Server](http://www.linuxvirtualserver.org/)；  
+七层 (应用层 HTTP、DNS 等) 负载均衡本质是内容交换，可以通过如 URL、GeoIP 等等灵活的规则将流量转发到不同服务器，Nginx 属于七层负载均衡。参考：[四层、七层负载均衡的区别？](https://cloud.tencent.com/developer/article/1082047)
 
 **几个负载均衡策略：**
 
@@ -37,20 +37,19 @@ Nginx 是一个高性能的 HTTP 和反向代理服务器。
 ./nginx -s stop
 # 处理完手头任务后停止
 ./nginx -s quit
+# 验证配置文件
+./nginx -t
+./nginx -t -c /xxx/xxx.conf
 # 重载配置（启动时指定的哪个配置文件，就重新加载哪个）
 ./nginx -s reload
 ```
 
-## 安装
-
 ## 核心配置
 
-### 说明
+配置文件参考：  
 
-- 配置文件参考：
-	- [Full Example Configuration | NGINX](https://www.nginx.com/resources/wiki/start/topics/examples/full/)
-	- [Nginx 配置详解 | 菜鸟教程 (runoob.com)](https://www.runoob.com/w3cnote/nginx-setup-intro.html)
-- [nginx优化 突破十万并发 - 房客 - 博客园 (cnblogs.com)](https://www.cnblogs.com/sxlfybb/archive/2011/09/15/2178160.html)
+- [nginx 官方文档](https://nginx.org/en/docs/)
+  - [http_core模块配置说明](https://nginx.org/en/docs/http/ngx_http_core_module.html)
 
 ```shell
 # 全局块，配置影响Nginx全局行为
@@ -75,18 +74,17 @@ http {
   #include    /etc/nginx/fastcgi.conf;
   index    index.html index.htm index.php;
 
-  default_type application/octet-stream; #默认文件类型，默认为 text/plain
+  default_type application/octet-stream; # 默认文件类型，默认为 text/plain
+  # 自定义 log 格式命名为 main
   log_format   main '$remote_addr - $remote_user [$time_local]  $status '
-    '"$request" $body_bytes_sent "$http_referer" '
-    '"$http_user_agent" "$http_x_forwarded_for"'; # 自定义格式命名为 main
+                    '"$request" $body_bytes_sent "$http_referer" '
+                    '"$http_user_agent" "$http_x_forwarded_for"';
   access_log   logs/access.log  main; # 指定日志位置与格式
   sendfile     on; # 是否使用sendfile（零拷贝），可以配置在http块，server块，location块中
   keepalive_timeout 65; # 连接超时时间，默认为75s，可以配置在http块，server块，location块中
-  #tcp_nopush   on;
+  #tcp_nopush   on; # 默认off，用于控制TCP报文的PSF标志，当PSF为TRUE时会立即读取或发送缓冲区中的数据
   #server_names_hash_bucket_size 128; # this seems to be required for some vhosts
 
-  error_page 404 https://www.baidu.com; # 404 错误页，可以配置在http块，server块，location块中
-  
   # server块，配置虚拟主机相关参数
   
   # --- 部署静态资源示例 ---
@@ -100,18 +98,25 @@ http {
       deny 127.0.0.1;    # 拒绝的ip
       allow 172.18.5.54; # 允许的ip           
     }
+    # 代理后端的 404、5xx 到 error_pages
+    proxy_intercept_errors on;
 
-    # VUE 打包后配置示例
+    # eg：静态资源配置
+    # location 后的路径末尾有无斜杠不影响匹配
     location /dist/ {
       expires 365d;
-      alias ./html/dist/;
+      # root 会将请求路径拼接在末尾
+      # alias 会将请求路径部分替换后拼接在末尾
+      alias ./html/dist/; # alias 末尾建议要加 /
       index index.html index.htm;
-      # 由于 VUE 路由模式，使用 try_files 将找不到的文件重定向到 index.html
+      # 兼容 SPA 路由，使用 try_files 将找不到的文件重定向到 index.html
       try_files $uri $uri/ /dist/index.html;
-      add_header 'Access-Control-Allow-Origin' '*';
+      # 配置 index.html 禁止缓存，前端打包其他资源注意要加 hash 后缀确保缓存失效
       if ($request_filename ~ .*\.(html|htm)?$) {
         add_header Cache-Control "private,no-store,no-cache,must-revalidate,proxy-revalidate";
       }
+      # 添加跨域支持
+      add_header 'Access-Control-Allow-Origin' '*';
       if ($request_method = 'OPTIONS') {
         add_header 'Access-Control-Allow-Origin' '*';
         add_header 'Access-Control-Allow-Credentials' 'true';
@@ -120,58 +125,138 @@ http {
         add_header 'Access-Control-Max-Age' 1728000;
         return 204;
       }
-    } 
+    }
 
     # 配置返回静态 Json 文件示例
     location /getJson/ {
-        default_type application/json;
-        alias json/;
-        add_header Cache-Control no-cache; # 不缓存
+      default_type application/json;
+      alias json/;
+      add_header Cache-Control no-cache; # 不缓存
     }
 	
-    error_page 500 502 503 504 /50x.html;
-      location = /50x.html{
-        root html;
+    # 错误页，可以配置在http块，server块，location块中
+    error_page  404              /404.html;
+    error_page  500 502 503 504  /500.html;
+    location = /50x.html{
+      root html;
+    }
+
+    # eg：反向代理配置
+    location /gateway/ {
+      proxy_pass http://backend_server;
+      # 跨域配置
+      if ($request_method = 'OPTIONS') {
+        add_header 'Access-Control-Allow-Origin' '*';
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+        add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
+        add_header 'Access-Control-Allow-Credentials' 'true';
+        add_header 'Access-Control-Max-Age' 3600;
+        add_header 'Content-Type' 'text/plain; charset=utf-8';
+        add_header 'Content-Length' 0;
+        return 204;
       }
+      add_header 'Access-Control-Allow-Origin' '*';
+      add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+      add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
+      add_header 'Access-Control-Allow-Credentials' 'true';
+      
+      proxy_pass http://backend_server;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
     }
-
-  # --- 反向代理示例 ---
-  server { # simple reverse-proxy
-    listen       80; 
-    server_name  domain2.com www.domain2.com; 
-    access_log   logs/domain2.access.log  main;
-
-    # serve static files
-    location ~ ^/(images|javascript|js|css|flash|media|static)/  {
-      root    /var/www/virtual/big.server.com/htdocs;
-      expires 30d;
-    }
-
-    # pass requests for dynamic content to rails/turbogears/zope, et al
-    location / {
-      proxy_pass      http://127.0.0.1:8080;
-    }
+    
   }
 
-  upstream big_server_com {
+  # 负载均衡配置
+  upstream backend_server {
   	#ip_hash; # 使用ip_hash
-    server 127.0.0.3:8000 weight=5;
+    server 127.0.0.3:8000 weight=5; # 指定权重
     server 127.0.0.3:8001 weight=5;
     server 192.168.0.1:8000;
     server 192.168.0.1:8001;
   }
-  
-  # --- 负载均衡示例 ---
-  server { # simple load balancing
-    listen          80;
-    server_name     big.server.com;
-    access_log      logs/big.server.access.log main;
-
-    location / {
-	  #root   html;		# 这个不要了换成下面的一行
-      proxy_pass      http://big_server_com;
-    }
-  }
 
 }
 ```
+
+### location 匹配顺序
+
+参考官方文档：[location](https://nginx.org/en/docs/http/ngx_http_core_module.html#location)
+
+`location` 匹配顺序遵循以下规则：精确 -- 前缀 -- 正则 -- 普通
+
+1. **精确匹配 (`=`)**
+
+```nginx
+location = /50x.html {
+  root   html;
+}
+```
+
+2. **前缀匹配 (`^~`)**
+
+```nginx
+location ^~ /images/ {
+  # 匹配所有以 /images/ 开头的请求
+}
+```
+
+3. **正则匹配 (`~` 和 `~*`)**：`~` 表示区分大小写，`~*` 表示不区分大小写，按配置文件的书写顺序匹配
+
+```nginx
+location ~ \.php$ {
+  proxy_pass   http://127.0.0.1;
+}
+```
+
+4. **普通前缀匹配**：会选择匹配最长的
+
+```nginx
+location /doc/ {
+  # 匹配所有请求
+}
+```
+
+5. **通用匹配 (`/`)**
+
+```nginx
+location / {
+    # 通用匹配，处理所有未匹配到其他 location 的请求
+}
+```
+
+### 示例
+
+### root vs alias
+
+root 用于设置请求路径的根目录，默认指向 nginx 安装目录下的 `./html` 目录；root 可以出现在 `server`、`location` 块中，location 中的 root 会覆盖 server 中的 root 配置。nginx 会将请求的 uri 追加到 root 指定的路径后，形成最终的文件路径。例如：
+
+```shell
+location /static/ {
+  root /var/www/app/;
+}
+```
+
+如果请求 uri 是 `/static/image.png`，nginx 会将其映射到 `/var/www/app/static/image.png`。
+
+alias 只能出现在 location 块中，与 root 不同它会替换请求路径中的匹配部分。
+
+```shell
+location /static/ {
+  alias /var/www/app/static/;
+}
+```
+
+如果请求 uri 是 `/static/image.png`，Nginx 会将其映射到 `/var/www/app/static/image.png`。
+
+注意：root 后的路径末尾加不加斜杠行为都一样，alias 路径末尾一定要加 `/`。
+
+### 重写请求路径
+
+当使用 `location` 块来匹配特定的路径时，根据配置的不同，可以删除、保留或替换路径中的部分内容。
+
+## 跨域问题
+
+![[FrontEnd/跨域问题]]

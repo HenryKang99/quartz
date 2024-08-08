@@ -1,5 +1,5 @@
 ---
-title: 'CSS常用小结'
+title: 'CSS小结'
 categories: ''
 description: ''
 order: 0
@@ -8,70 +8,72 @@ date: 2022-11
 
 ## 标准流
 
-- 块元素：
-  - 独占一行，可以直接设置宽高。
-    - 默认宽度是父容器的 100%。
-  - 脱离标准流后，大小默认为内容大小。
-- 行内元素：
-  - 默认是内容的宽高，不可以直接设置宽高。
-    - 脱离标准流后，可以设置宽高。
-  - 内部只能放行内元素。
-    - 特例：\<a> 标签可以包含块级元素。
-- 行内块元素：
-  - 可以设置宽高，img、input、td 等。
-- 模式转换：
-  - 使用 display:block 将 \<a> 转换为块级元素。
-  - 使用 display:inline 将 \<div> 转换为行内元素。
-  - 使用 display:inline-block 将 \<span> 转换为行内块元素。
+标准流是默认的布局模式，元素按照文档的顺序从上到下、从左到右排列。块级元素占据整行，而内联元素则在同一行内与其他内联元素并排显示。
 
-----
+**块元素**：独占一行，可以直接设置宽高，默认宽度是父容器的 100%，脱离标准流后大小默认为内容大小。例如：div、p、h1 等。
+
+**行内元素**：默认是内容的宽高，不可以直接设置。脱离标准流后，可以设置宽高。内部只能放行内元素，存在一个特例：`<a>` 标签可以包含块级元素。例如：span、a、strong 等。
+
+**行内块元素**：可以设置宽高，例如 img、input、button 等。
+
+**转换**：
+
+- 使用 `display:block` 将元素转换为块级元素。
+- 使用 `display:inline` 将元素转换为行内元素。
+- 使用 `display:inline-block` 将元素转换为行内块元素。
 
 ## 盒子模型
 
-- **border**：边框
-  - **会影响盒子大小**，即盒子的实际大小需要加上边框尺寸。
-  - 样式：solid、dashed、dotted……
-  - 使用 border-collapse：合并单元格的边框。
-- **padding**：内边距，即盒子和内容的距离。
-  - 复合写法：
+所有 HTML 元素都可以看成一个盒子。
 
-    | 格式 | 说明 |  
-    | --- | --- |  
-    | padding：5px | 上下左右都 5 |  
-    | padding：5px 10px | 上下 5，左右 10 |  
-    | padding：5px 10px 20 px | 上 5 左右 10 下 20 |  
-    | padding：5px 10px 15 px 20px | 上右下左 |
+![[_resources/attachment/e905a53a-bacd-4f0e-bf3b-479995ed8756.png]]
 
-  - 显示不下的时候 **会撑开盒子**，但有不会撑开盒子的情况：
-  
-    - 没有设置盒子宽度的时候，盒子默认和父元素一样宽，不会被撑宽。
-    - css3 设置 box-sizing: border-box;
-- **margin**：外边距，即盒子与盒子的距离。
-  - 复合写法：与 padding 一样。
-  - 块级盒子水平居中：指定宽度后，margin：0 auto
-    - 行元素居中，给他的父元素设置 text-align: center
-  - 块级嵌套子元素设置垂直外边距会使父元素 **塌陷**。解决方案：
-    - 给父元素定义上边框
-    - 给父元素设置 padding
-    - 给父元素添加 overflow: hidden
-    - 让父元素浮动或者脱离标准流
-  - 清除内外边距。*{margin：0；padding：0}
-  - 为了兼容性，行内元素尽量只设置左右 margin。
-    - 想要设置上下 margin，可以转化为块元素。
-- **样式**
-  - 圆角边框：border-radius：length
-  - 盒子阴影：box-shadow
+**border**：边框，**会影响盒子大小**，即盒子的实际大小需要加上边框尺寸。
 
-    | 值 | 说明 |  
-    | -------- | ---------------------------- |  
-    | h-shadow | 必需，水平阴影 |  
-    | v-shadow | 必需，垂直阴影 |  
-    | blur | 模糊距离 |  
-    | spread | 阴影尺寸 |  
-    | color | 习惯设置透明度 rgba(0,0,0,.3) |  
-    | inset | 外部阴影 -->内部阴影 |
+样式：solid、dashed、dotted……  
+使用 `border-collapse`：合并单元格的边框。
 
-----
+**padding**：内边距，即盒子和内容的距离。
+
+| 写法                          | 说明             |     |
+| --------------------------- | -------------- | --- |
+| padding：5px                 | 上下左右都 5        |     |
+| padding：5px 10px            | 上下 5，左右 10     |     |
+| padding：5px 10px 20 px      | 上 5 左右 10 下 20 |     |
+| padding：5px 10px 15 px 20px | 上右下左           |     |
+
+内容显示不下的时候**会撑开盒子**，但有不会撑开盒子的情况：  
+
+1. 没有设置盒子宽度的时候，盒子默认和父元素一样宽，不会被撑宽。  
+2. 设置 box-sizing: border-box；
+
+**margin**：外边距，即盒子与盒子的距离。
+
+写法和 padding 一样。
+
+- 块级盒子水平居中：指定宽度后设置 `margin：0 auto`
+- 行元素居中，给它的父元素设置 `text-align: center`
+- 块级嵌套子元素设置垂直外边距会使父元素**塌陷**。解决方案：
+  - 给父元素定义上边框
+  - 给父元素设置 padding
+  - 给父元素添加 overflow: hidden
+  - 让父元素浮动或者脱离标准流
+- 清除内外边距。`{margin：0；padding：0}`
+- 为了兼容性，行内元素尽量只设置左右 margin，想要设置上下 margin，可以转化为块元素。
+
+**样式**
+
+- 圆角边框：border-radius：length
+- 盒子阴影：box-shadow
+
+| 值        | 说明            |     |
+| -------- | ------------- | --- |
+| h-shadow | 必需，水平阴影       |     |
+| v-shadow | 必需，垂直阴影       |     |
+| blur     | 模糊距离          |     |
+| spread   | 阴影尺寸          |     |
+| color    | 颜色            |     |
+| inset    | 外部阴影 --> 内部阴影 |     |
 
 ## 浮动
 
@@ -89,26 +91,23 @@ date: 2022-11
     2. 给父盒子添加 overflow 属性，值为 hidden、auto 或 scroll 都行。
     3. 伪元素法（推荐）：相当于第一种方法，在后面生成了一个新块，避免在代码中直接引入新标签。
 
-    ```css
-    <div class="clearfix" >
-    	<div style="float:left"></div>
-    </div>
-    
-    .clearfix:after{ 
-        content:"";
-        display:block;
-        height: 0;
-        clear:both;
-        visibility: hidden;
-    }
-    // IE 6、7 专有
+```css
+<div class="clearfix" >
+  <div style="float:left"></div>
+</div>
 
+.clearfix:after{ 
+  content:"";
+  display:block;
+  height: 0;
+  clear:both;
+  visibility: hidden;
+}
+// IE 6、7 专有
 .clearfix{  
-        *zoom: 1;  
-    }  
-    ```
-
-----
+  *zoom: 1;  
+}  
+```
 
 ## 定位
 
@@ -134,8 +133,6 @@ date: 2022-11
 - 注意：类似于浮动，使用了定位模式的元素具有行内块元素的特点：
   - 行内元素加了绝对、固定定位可以直接设置宽高。
   - 块级元素加了绝对、固定定位，默认为内容的宽高。
-
-----
 
 ## 例子
 

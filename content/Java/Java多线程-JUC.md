@@ -10,7 +10,7 @@ date: 2023-01
 
 [[/OS/操作系统线程调度|操作系统线程调度]]  
 [[/Java/JVM内存模型与锁优化|JVM内存模型与锁优化]]  
-[[/Java/Java多线程-基础|Java多线程-基础]]
+[[Java/Java多线程-基础|Java多线程-基础]]
 
 ## 常用的几个辅助类
 
@@ -376,6 +376,76 @@ public ThreadPoolExecutor(int corePoolSize,
   3. DiscardOldestPolicy：丢弃队列中等待最久的任务
   4. DiscardPolicy：静默丢弃任务
 
+### 线程池实现生产者消费者
+
+```java
+// 生产者-主线程，消费者-子线程
+public static void main(String[] args) {
+    ThreadPoolExecutor executor = null;
+    try {
+        // 创建线程池，队列大小设为线程数的 1.5 倍
+        executor = new ThreadPoolExecutor(
+            poolSize,
+            poolSize,
+            5,
+            TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>((int) (poolSize * 1.5)),
+            new CustomizableThreadFactory("thread-name-prefix"),
+            new ThreadPoolExecutor.CallerRunsPolicy()
+        );
+
+        // 主线程提交任务
+        do {
+            try {
+                executor.execute(new MyTask(batchNo, dataList));
+            } catch (RejectedExecutionException e) {
+                // 如果任务队列满了，sleep 后重试
+                Thread.sleep(2000);
+            }
+        } while (xxx);
+
+        // 主线程阻塞（若需要）
+        while (true) {
+            // 当任务队列为空且所有线程工作完毕
+            if (executor.getQueue().isEmpty() && executor.getActiveCount() == 0) {
+                break;
+            } else {
+                Thread.sleep(2000);
+            }
+        }
+    } catch (Throwable e) {
+        if (e instanceof InterruptedException) {
+            log.info("任务被终止...");
+        } else {
+            log.error("任务执行出错", e);
+        }
+    } finally {
+        executor.shutdownNow();
+    }
+}
+
+/**
+ * 要执行的任务逻辑
+ */
+private class MyTask implements Runnable {
+
+    // 批次号
+    private int batchNo;
+    // 要消费的数据
+    private List<Object> dataList;
+
+    public MyTask(int batchNo, List<Object> dataList) {
+        this.batchNo = batchNo;
+        this.dataList = dataList;
+    }
+
+    @Override
+    public void run() {
+        // do sth.
+    }
+}
+```
+
 ## Fork/Join
 
 #todo  
@@ -410,27 +480,56 @@ public void testFutureTask() throws ExecutionException, InterruptedException {
 
 CompletableFuture 是 FutureTask 的加强版，增加了异步回调方法的注册，减少阻塞和轮询。常用 API 小结：
 
-- 任务提交
-  - runAsync()：无返回值
-  - supplyAsync()：有返回值
-- 获取结果
-  - get()：获取值，会抛出 Interrupted 异常；
-  - get(time, unit)：同上；
-  - join()：获取值，不会抛出 Interrupted 异常；
-  - getNow(defaultValue)：如果当前没有执行完，返回默认值；
-  - complete(defaultValue)：返回 Boolean 表示当前调用是否将 cf 状态置为了完成 ，即调用时 cf 未执行完成，此操作强制标记为完成，并返回 true，后续的 join/get 会立即返回 defaultValue ；
-- 流程控制，串联执行
-  - thenApply(fun)：接收上一步的结果，进一步处理，有返回值，如果某一步发生异常，则终止，执行异常处理逻辑；
-  - handle(biFun<v,e>)：接收上一步的结果与异常；
-  - thenAccept(consumer)：消费上一步的结果，返回 Void；
-  - thenRun() vs thenRunAsync()：两者都是在上一个任务执行完后执行，且不依赖于上一个任务的返回结果。两者的区别在于当传递自定义线程池时，第一个任务后，thenRun 仍会使用自定义线程池，而 thenRunAsync 如果不指定会使用 ForkJoinPool；
-  - whenComplete(v, e)：接收上一步的结果与异常，与 handle 的不同在于 whenComplete 如果接收到了异常 e，则会隐藏本身 stage 执行时产生的异常，只把接收到的 e 传递到后面的 stage；
-- 任务合并，并行执行
-  - thenCombine(cf, fun)：合并两个 cf 的结果，返回新的结果；
-  - allOf(...cf)：所有任务完成后，返回一个新的 cf，企图通过这个 cf 获取值将得到 null；
-  - anyOf(...cf)：返回最快执行完的 cf，即使他发生了异常；
-- 异常处理
-  - exceptionally(e)：注意只能捕获上一步任务中的异常；
+**任务提交**
+
+- runAsync()：无返回值
+- supplyAsync()：有返回值
+
+**获取结果**
+
+- get()：获取值，会抛出 Interrupted 异常；
+- get(time, unit)：同上；
+- join()：获取值，不会抛出 Interrupted 异常；
+- getNow(defaultValue)：如果当前没有执行完，返回默认值；
+- complete(defaultValue)：返回 Boolean 表示当前调用是否将 cf 状态置为了完成 ，即调用时 cf 未执行完成，此操作强制标记为完成，并返回 true，后续的 join/get 会立即返回 defaultValue ；  
+
+**流程控制，串联执行**
+
+- thenApply(fun)：接收上一步的结果，进一步处理，有返回值，如果某一步发生异常，则终止，执行异常处理逻辑；
+- handle(biFun<v,e>)：接收上一步的结果与异常；
+- thenAccept(consumer)：消费上一步的结果，返回 Void；
+- thenRun() vs thenRunAsync()：两者都是在上一个任务执行完后执行，且不依赖于上一个任务的返回结果。两者的区别在于当传递自定义线程池时，第一个任务后，thenRun 仍会使用自定义线程池，而 thenRunAsync 如果不指定会使用 ForkJoinPool；
+- whenComplete(v, e)：接收上一步的结果与异常，与 handle 的不同在于 whenComplete 如果接收到了异常 e，则会隐藏本身 stage 执行时产生的异常，只把接收到的 e 传递到后面的 stage；
+
+**任务合并，并行执行**
+
+- thenCombine(cf, fun)：合并两个 cf 的结果，返回新的结果；
+- allOf(...cf)：所有任务完成后，返回一个新的 cf，企图通过这个 cf 获取值将得到 null；
+- anyOf(...cf)：返回最快执行完的 cf，即使他发生了异常；
+
+**异常处理**
+
+- exceptionally(e)：注意只能捕获上一步任务中的异常；
+
+### 结合 Stream 流
+
+```java
+public static void main(String[] args) {  
+    ExecutorService executor = new ThreadPoolExecutor(10, 10, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());  
+    List<Integer> dataList = Arrays.asList(1, 2, 3, 4, 5);  
+    List<CompletableFuture<Integer>> futures = dataList.stream()  
+        .map(data -> CompletableFuture.supplyAsync(() -> {  
+            // do sth.  
+            return data;  
+        }, executor))  
+        .collect(Collectors.toList());  
+    // 主线程阻塞  
+    CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));  
+    allFutures.join();  
+      
+    // do sth.  
+}
+```
 
 ### 测试 demo
 

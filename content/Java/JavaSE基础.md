@@ -661,64 +661,64 @@ public static void swap(Stu a,Stu b){
 
 - 类型擦除对 **参数或返回值是类型参数类型的方法** 造成的影响：
 
-  ```java
-  // Pair类 封装某类型为一对
-  public class Pair<T> {
-      private T first;
-      private T second;
-  
-      public Pair() {
-      }
-  
-      public Pair(T first, T second) {
-          this.first = first;
-          this.second = second;
-      }
-  
-      public T getFirst() {
-          return first;
-      }
-  
-      public void setFirst(T first) {
-          this.first = first;
-      }
-  
-      public T getSecond() {
-          return second;
-      }
-  
-      public void setSecond(T second) {
-          this.second = second;
-      }
-  
-  }
-  // DateInterval类 表示一时间段
-  class DateInterval extends Pair<LocalDate> {
-      // 重写父类方法，保证时间段为正值
-      @Override
-      public void setSecond(LocalDate second) {
-          if (second.compareTo(this.getFirst()) >= 0)
-              super.setSecond(second);
-      }
-  }
-  // main方法
-  public static void main(String[] args) {
-      Class<DateInterval> clazz = DateInterval.class;
-      Method[] methods = clazz.getMethods();
-      for (Method method : methods) {
-          System.out.println(method);
-      }
-  }
-  // 打印一下DateInterval的运行时方法发现结果包含下面两条setSecond方法：
-  // 1. public void DateInterval.setSecond(java.time.LocalDate)
-  // 2. public void DateInterval.setSecond(java.lang.Object)
-  //----上面是重写的，下面是继承的-----
-  // 对比get方法与setFirst方法：
-  // 3. public java.lang.Object Pair.getFirst()
-  // 4. public java.lang.Object Pair.getSecond()
-  // 5. public void Pair.setFirst(java.lang.Object)
-  // ……
-  ```
+```java
+// Pair类 封装某类型为一对
+public class Pair<T> {
+    private T first;
+    private T second;
+
+    public Pair() {
+    }
+
+    public Pair(T first, T second) {
+        this.first = first;
+        this.second = second;
+    }
+
+    public T getFirst() {
+        return first;
+    }
+
+    public void setFirst(T first) {
+        this.first = first;
+    }
+
+    public T getSecond() {
+        return second;
+    }
+
+    public void setSecond(T second) {
+        this.second = second;
+    }
+
+}
+// DateInterval类 表示一时间段
+class DateInterval extends Pair<LocalDate> {
+    // 重写父类方法，保证时间段为正值
+    @Override
+    public void setSecond(LocalDate second) {
+        if (second.compareTo(this.getFirst()) >= 0)
+            super.setSecond(second);
+    }
+}
+// main方法
+public static void main(String[] args) {
+    Class<DateInterval> clazz = DateInterval.class;
+    Method[] methods = clazz.getMethods();
+    for (Method method : methods) {
+        System.out.println(method);
+    }
+}
+// 打印一下DateInterval的运行时方法发现结果包含下面两条setSecond方法：
+// 1. public void DateInterval.setSecond(java.time.LocalDate)
+// 2. public void DateInterval.setSecond(java.lang.Object)
+//----上面是重写的，下面是继承的-----
+// 对比get方法与setFirst方法：
+// 3. public java.lang.Object Pair.getFirst()
+// 4. public java.lang.Object Pair.getSecond()
+// 5. public void Pair.setFirst(java.lang.Object)
+// ……
+```
 
 - **分析：**
   - 很明显，由于类型擦除，继承 `Pair<LocalDate>`，实际继承的是 `Pair`，类型参数都替换为了 `Object`，那为什么我们还可以重写 `setSecond(LocalDate second)` 方法而不报错呢？这就是 **类型擦除与多态发生的冲突**；

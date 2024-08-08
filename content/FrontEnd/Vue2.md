@@ -52,7 +52,7 @@ date: 2023-01
 
 ![[_resources/attachment/932630eb-97b4-415a-a76f-ca5dde2b3142.png]]
 
-**语法糖：**
+**语法糖**：
 
 ![[_resources/attachment/e7a6c1cf-e36e-4d7d-b369-2bcbb699803b.png]]
 
@@ -254,7 +254,7 @@ date: 2023-01
 
 #### 4.3 路由嵌套
 
-**注意：**
+**注意**：
 
 - `children[ ]` 内部的组件，path 不要带 `/`，否则 url 会映射到根路径。
 - 在组件内部使用 `router-view` 标签。
@@ -349,8 +349,6 @@ $route 对象：封装了当前路由状态的信息。
 
 ---
 
----
-
 ### 6. axios
 
 #### 6.1 Promise
@@ -371,7 +369,7 @@ $route 对象：封装了当前路由状态的信息。
 
 ##### 1. 两种封装方式
 
-**方式一：**传入回调方法，在封装体内部回调。
+**方式一**：传入回调方法，在封装体内部回调。
 
 ```js
 import axios from 'axios'
@@ -402,7 +400,7 @@ request({
 })
 ```
 
-**方式二：**直接 return，因为 axios 返回的就是一个 promise。
+**方式二**：直接 return，因为 axios 返回的就是一个 promise。
 
 ```js
 import axios from 'axios'

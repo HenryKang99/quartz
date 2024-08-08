@@ -10,7 +10,7 @@ date: 2023-01
 
 ### 概念
 
-**多线程**：一个程序同时执行多个任务，通常每一个任务称为一个线程（ thread），可以同时运行一个以上线程的程序称为多线程程序（ multi-threaded ) 。
+**多线程**：一个程序同时执行多个任务，通常每一个任务称为一个线程（thread），可以同时运行一个以上线程的程序称为多线程程序（multi-threaded) 。
 
 **进程**：进程是操作系统资源分配的基本单位，是程序的一次执行过程。进程间隔离性强，较安全但是进程间通信效率低。
 
@@ -133,6 +133,9 @@ public class Test00CreateThread {
 
 wait 与 notify 顺序不能颠倒，否则可能会一直阻塞。
 
+> [!note] sleep、yield、wait、notify 是否会释放锁？  
+> 当前线程调用 Thread 的静态方法 sleep、yield 不会释放当前持有的锁，而 wait 和 notify 通过 synchronized(lock) 中声明的锁 lock 调用，会释放该锁。
+
 ### join(ms)
 
 - join 方法本质是 **让调用线程 wait 在当前被等待线程的实例对象上**，被等待线程退出之前会调用 notifyAll() 方法唤醒所有等待在自己身上的线程。
@@ -220,25 +223,29 @@ Lock 与 await() + signal() 配合，作用同 Synchronized 与 wait() + notify(
 
 stop()、resume()、suspend() 被废弃，取而代之的是 interrupt()，当我们试图停止一个线程时，应该以中断的方式通知该线程，至于是停止还是继续运行，由该线程自己决定（通常线程执行完收尾工作后，停止自己）。
 
-- `public void interrupt()`
-  - Unless the current thread is interrupting itself, which is always permitted, the *checkAccess* method of this thread is invoked, which may cause a *SecurityException* to be thrown.
-	  - 即只有该线程自己或其父线程，可以 interrupt 该线程，否则抛出 SecurityException。
-  - If this thread is blocked in an invocation of the wait(), wait(long), or wait(long, int) methods of the Object class, or of the join(), join(long), join(long, int), sleep(long), or sleep(long, int), methods of this class, then its *interrupt status will be cleared* and it will receive an *InterruptedException*.
-  - If this thread is blocked in an I/O operation upon an InterruptibleChannel then the channel will be closed, the thread's interrupt status will be set, and the thread will receive a *ClosedByInterruptException*.
-  - If this thread is blocked in a Selector then the thread's interrupt status will be set and it will return immediately from the selection operation, possibly with a non-zero value, just as if the selector's wakeup method were invoked.
-  - If none of the previous conditions hold then this thread's interrupt status will be set.
-  - Interrupting a thread that is not alive need not have any effect.
-  - **小结**：
-	  - 当线程处于 wait、sleep、join ，即 **等待状态**，会被直接唤醒并转为就绪状态，如果能够得到运行，那么将抛出 InterruptedException，**此时 interrupt 标志位被置为 false**；
-	  - 当线程处于 **被阻塞状态**，那么将置 interrupt 标志位为 true；
-		  - 如果是 IO 阻塞，且 IO 通道可被中断，则抛出 ClosedByInterruptException；
-		  - 如果阻塞在 select 操作上，则立即转变为就绪状态，就像执行了 wakeup 方法一样；
-	  - 非上述情况，则将 interrupt 标志位为 true；
-	  - 中断死的的线程，不会产生影响。
-- `public boolean isInterrupted()`
-  - 返回 **是否被中断过** 的标志位，未处于活动状态的线程，其被忽略的线程中断，可通过此方法返回 true 来判断。
-- `public static boolean interrupted()`
-  - 作用和 `isInterrupted()` 相同，区别在于每次调用后 **会将标志位置为 false**。
+`public void interrupt()`
+
+- Unless the current thread is interrupting itself, which is always permitted, the *checkAccess* method of this thread is invoked, which may cause a *SecurityException* to be thrown.
+- If this thread is blocked in an invocation of the wait(), wait(long), or wait(long, int) methods of the Object class, or of the join(), join(long), join(long, int), sleep(long), or sleep(long, int), methods of this class, then its *interrupt status will be cleared* and it will receive an *InterruptedException*.
+- If this thread is blocked in an I/O operation upon an InterruptibleChannel then the channel will be closed, the thread's interrupt status will be set, and the thread will receive a *ClosedByInterruptException*.
+- If this thread is blocked in a Selector then the thread's interrupt status will be set and it will return immediately from the selection operation, possibly with a non-zero value, just as if the selector's wakeup method were invoked.
+- If none of the previous conditions hold then this thread's interrupt status will be set.
+- Interrupting a thread that is not alive need not have any effect.
+
+**小结**：  
+- 即只有该线程自己或其父线程，可以 interrupt 该线程，否则抛出 SecurityException。
+- 当线程处于 wait、sleep、join ，即 **等待状态**，会被直接唤醒并转为就绪状态，如果能够得到运行，那么将抛出 InterruptedException，**此时 interrupt 标志位被置为 false**；
+- 当线程处于 **被阻塞状态**，那么将置 interrupt 标志位为 true；
+- 如果是 IO 阻塞，且 IO 通道可被中断，则抛出 ClosedByInterruptException；
+- 如果阻塞在 select 操作上，则立即转变为就绪状态，就像执行了 wakeup 方法一样；
+- 非上述情况，则将 interrupt 标志位为 true；
+- 中断死的的线程，不会产生影响。
+
+`public boolean isInterrupted()`  
+返回 **是否被中断过** 的标志位，未处于活动状态的线程，其被忽略的线程中断，可通过此方法返回 true 来判断。
+
+`public static boolean interrupted()`  
+作用和 `isInterrupted()` 相同，区别在于每次调用后 **会将标志位置为 false**。
 
 ## CPU 中的锁
 

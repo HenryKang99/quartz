@@ -186,7 +186,7 @@ volatile 的原理是使用了内存屏障，内存屏障是 CPU 读写内存操
 
 ### 线程的 6 种状态
 
-[[/Java/Java多线程-基础#OS 线程的实现方式]]
+[[Java/Java多线程-基础#OS 线程的实现方式]]
 
 ![image-20200917162743845](_resources/attachment/875e9856-4430-45d0-8d23-5e49e2c149aa.png)
 
